@@ -1,0 +1,14 @@
+.settings/*
+target/*
+*/.settings/*
+*/target/*
+.idea/*
+*/.project
+*/.classpath
+.project
+.classpath
+
+# Intellij
+*.iml
+*/*.iml
+
