@@ -1,33 +1,36 @@
 package promparse;
 
+/* parsed token */
 enum TOKEN {
-    tInvalid,
-    tEOF,
-    tLinebreak,
-    tMName,
-    tBraceOpen,
-    tBraceClose,
-    tLName,
-    tLValue,
-    tComma,
-    tEqual,
-    tTimestamp,
-    tValue
+    Invalid,
+    EOF,
+    Linebreak,
+    MName,
+    BraceOpen,
+    BraceClose,
+    LName,
+    LValue,
+    Equal,
+    Timestamp,
+    Value
 }
 
 %%
-
+%{
+    public int line() { return yyline; }
+%}
 %final
 %public
 %unicode
 %class PromLexer
 %function Lex
 %type TOKEN
-%state sInit,sLabels,sLValue,sValue,sTimestamp
-%char
+%state sLabels,sLValue,sValue,sTimestamp
 %line
-%column
-%debug
+%eofclose
+%eofval{
+return TOKEN.EOF;
+%eofval}
 
 D=[0-9]
 L=[a-zA-Z_]
@@ -36,27 +39,27 @@ C=[^\n\r]
 LB=\r\n|\n|\r
 
 %%
-\0                  { return TOKEN.tEOF; }
-{LB}                { yybegin(YYINITIAL); return TOKEN.tLinebreak; }
+\0                  { return TOKEN.EOF; }
+{LB}                { yybegin(YYINITIAL); return TOKEN.Linebreak; }
 [ \t]+              { /* ignore white space */ }
 <YYINITIAL> {
     #{C}*           { /* ignore lines begin with # */}
-    {M}({M}|{D})*   { yybegin(sValue); return TOKEN.tMName; }
+    {M}({M}|{D})*   { yybegin(sValue); return TOKEN.MName; }
 }
 <sValue> {
-    "{"             { yybegin(sLabels); return TOKEN.tBraceOpen; }
-    [^{ \t\n\r]+      { yybegin(sTimestamp); return TOKEN.tValue; }
+    "{"             { yybegin(sLabels); return TOKEN.BraceOpen; }
+    [^{ \t\n\r]+    { yybegin(sTimestamp); return TOKEN.Value; }
 }
 <sLabels> {
-    {L}({L}|{D})*   { return TOKEN.tLName; }
-    "}"             { yybegin(sValue); return TOKEN.tBraceClose; }
-    "="             { yybegin(sLValue); return TOKEN.tEqual; }
-    ","             { return TOKEN.tComma; }
+    {L}({L}|{D})*   { return TOKEN.LName; }
+    "}"             { yybegin(sValue); return TOKEN.BraceClose; }
+    "="             { yybegin(sLValue); return TOKEN.Equal; }
+    ","             { /* ignore commas between labels */ }
 }
-<sLValue> \"(\\.|[^\\\"])*\" { yybegin(sLabels); return TOKEN.tLValue; }
+<sLValue> \"(\\.|[^\\\"])*\" { yybegin(sLabels); return TOKEN.LValue; }
 <sTimestamp> {
-    {D}+            { return TOKEN.tTimestamp; }
-    {LB}            { yybegin(sInit); return TOKEN.tLinebreak; }
+    {D}+            { return TOKEN.Timestamp; }
+    {LB}            { yybegin(YYINITIAL); return TOKEN.Linebreak; }
 }
 /* default rule */
-.                 { return TOKEN.tInvalid; }
+[^]                 { return TOKEN.Invalid; }
