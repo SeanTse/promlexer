@@ -21,9 +21,6 @@ enum TOKEN {
 }
 
 %%
-%{
-    public int line() { return yyline; }
-%}
 %final
 %public
 %unicode
@@ -31,7 +28,6 @@ enum TOKEN {
 %function Lex
 %type TOKEN
 %state sLabels,sLValue,sValue,sTimestamp
-%line
 %eofclose
 %eofval{
 return TOKEN.EOF;
