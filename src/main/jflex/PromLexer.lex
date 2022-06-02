@@ -1,5 +1,10 @@
 package promparse;
 
+/**
+ * A lexer for prometheus metrics
+ * @author Sean
+ */
+
 /* parsed token */
 enum TOKEN {
     Invalid,
