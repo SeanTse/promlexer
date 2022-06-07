@@ -32,6 +32,16 @@ enum TOKEN {
 %eofval{
 return TOKEN.EOF;
 %eofval}
+%{
+    /**
+       * Returns the text corresponding to the current label value token.
+       *
+       * @return the matched label value.
+       */
+      public final String yylv() {
+              return new String(zzBuffer, zzStartRead + 1, zzMarkedPos - zzStartRead - 2);
+          }
+%}
 
 D=[0-9]
 L=[a-zA-Z_]
