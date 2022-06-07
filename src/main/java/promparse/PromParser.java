@@ -25,15 +25,17 @@ class Sample {
         hasTs = false;
         i = 0;
     }
+
     public void addln(String e) {
-        if(labelNames.size()>i)
-            labelNames.set(i,e);
+        if (labelNames.size() > i)
+            labelNames.set(i, e);
         else
             labelNames.add(e);
     }
+
     public void addlv(String e) {
-        if(labelValues.size()>i)
-            labelValues.set(i,e);
+        if (labelValues.size() > i)
+            labelValues.set(i, e);
         else
             labelValues.add(e);
         ++i;
@@ -59,7 +61,7 @@ class Sample {
             for (int j = 0; j < i; j++) {
                 sb.append(labelNames.get(j)).append("=\"").append(labelValues.get(j)).append("\",");
             }
-            sb.deleteCharAt(sb.length()-1);
+            sb.deleteCharAt(sb.length() - 1);
             sb.append("}");
         }
         sb.append(" ").append(val);
@@ -85,8 +87,7 @@ public class PromParser {
             String mname;
             do {
                 switch (scanner.Lex()) {
-                    case Invalid, EOF -> err = true;
-                    case Linebreak -> {}
+                    case Linebreak -> { /* pass blank lines */ }
                     case MName -> {
                         mname = scanner.yytext();
                         tk = scanner.Lex();
@@ -100,20 +101,23 @@ public class PromParser {
                         }
                         sample.val = scanner.yytext();
                         switch (scanner.Lex()) {
-                            case Linebreak, EOF -> {
-                            }
+                            case Linebreak, EOF -> { /* end of a sample without timestamp */}
                             case Timestamp -> {
                                 sample.hasTs = true;
                                 sample.ts = scanner.yytext();
+                                if (scanner.Lex() != TOKEN.Linebreak) {
+                                    err = true;
+                                }
                             }
-                            default -> err=true;
+                            default -> err = true;
                         }
-                        if(!err) {
+                        if (!err) {
                             sample.metricName = mname;
                             parsed.append(sample.print());
                             sample.reset();
                         }
                     }
+                    default -> err = true;
                 }
             } while (!err && !scanner.yyatEOF());
         } catch (Exception e) {
