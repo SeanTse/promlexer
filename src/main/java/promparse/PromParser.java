@@ -92,8 +92,28 @@ public class PromParser {
                         mname = scanner.yytext();
                         tk = scanner.Lex();
                         if (tk == TOKEN.BraceOpen) {
-                            err = parseLabelValues();
-                            tk = scanner.Lex();
+                            while (true) {
+                                tk = scanner.Lex();
+                                if (tk == TOKEN.BraceClose) break;
+                                else if (tk == TOKEN.LName) {
+                                    sample.addln(scanner.yytext());
+                                    if (scanner.Lex() != TOKEN.Equal) {
+                                        err = true;
+                                        break;
+                                    }
+                                    if (scanner.Lex() != TOKEN.LValue) {
+                                        err = true;
+                                        break;
+                                    } else {
+                                        sample.addlv(scanner.yylv());
+                                    }
+                                } else {
+                                    err = true;
+                                    break;
+                                }
+                            }
+                            if (!err) tk = scanner.Lex();
+                            else break;
                         }
                         if (tk != TOKEN.Value) {
                             err = true;
@@ -123,32 +143,5 @@ public class PromParser {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    private static boolean parseLabelValues() {
-        try {
-            TOKEN tk;
-            while (true) {
-                tk = scanner.Lex();
-                if (tk == TOKEN.BraceClose)
-                    return false;
-                else if (tk == TOKEN.LName) {
-                    sample.addln(scanner.yytext());
-                    if (scanner.Lex() != TOKEN.Equal) {
-                        return true;
-                    }
-                    if (scanner.Lex() != TOKEN.LValue)
-                        return true;
-                    else {
-                        sample.addlv(scanner.yylv());
-                    }
-                } else {
-                    return true;
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return true;
     }
 }
