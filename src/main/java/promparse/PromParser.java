@@ -85,13 +85,9 @@ public class PromParser {
             String mname;
             do {
                 switch (scanner.Lex()) {
-                    case Invalid, EOF: {
-                        err = true;
-                        break;
-                    }
-                    case Linebreak:
-                        continue;
-                    case MName: {
+                    case Invalid, EOF -> err = true;
+                    case Linebreak -> {}
+                    case MName -> {
                         mname = scanner.yytext();
                         tk = scanner.Lex();
                         if (tk == TOKEN.BraceOpen) {
