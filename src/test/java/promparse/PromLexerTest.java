@@ -61,14 +61,11 @@ final class PromLexerTest {
     public void checkTokens() {
         /* token count */
         int i = 0;
-        /* line count */
-//        int line = 0;
         /* text count */
         int t = 0;
         try {
             do {
                 TOKEN tk = scanner.Lex();
-//                line = scanner.line();
                 Assertions.assertEquals(expectedTokens[i], tk);
                 ++i;
                 if (tk != TOKEN.Linebreak && tk != TOKEN.EOF && tk != TOKEN.Invalid) {
@@ -78,7 +75,6 @@ final class PromLexerTest {
                 }
             } while (!scanner.yyatEOF());
         } catch (Exception e) {
-//            System.err.println("ERROR lexing line #" + line);
             System.out.println("Unexpected exception:");
             e.printStackTrace();
         }
