@@ -71,4 +71,11 @@ class PromParserTest {
         PromParser.parse(text, sb);
         assertEquals(refText,sb.toString());
     }
+
+    @Test
+    public void checkParseEmptyString () {
+        StringBuilder sb = new StringBuilder();
+        PromParser.parse("",sb);
+        assertEquals("",sb.toString());
+    }
 }
