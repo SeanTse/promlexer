@@ -1,5 +1,5 @@
 ### promlexer
-promlexer is a tool to tokenize [prometheus format](https://prometheus.io/docs/concepts/data_model/) text (metrics)  built with [JFlex](https://jflex.de/). 
+promlexer is a tool built with [JFlex](https://jflex.de/) to tokenize [prometheus format](https://prometheus.io/docs/concepts/data_model/) text (metrics). 
 It's basically based on the prometheus [promlex.l](https://github.com/prometheus/prometheus/blob/main/model/textparse/promlex.l). 
 But unlike the Prometheus, it drops the lines begin with a character `#`, e.g., HELP lines and TYPE lines.
 You can run the following maven command to build your lexer:
